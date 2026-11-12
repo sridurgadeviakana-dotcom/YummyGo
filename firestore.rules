@@ -1,0 +1,259 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        getUserData().role == 'admin' ||
+        getUserData().role == 'administrator'
+      ) && getUserData().status != 'suspended';
+    }
+
+    function isRestaurantOwner() {
+      return isAuthenticated() && (
+        getUserData().role == 'restaurant_owner' ||
+        getUserData().role == 'partner'
+      );
+    }
+
+    function isDeliveryPartner() {
+      return isAuthenticated() && (
+        getUserData().role == 'delivery_partner' ||
+        exists(/databases/$(database)/documents/delivery_partners/$(request.auth.uid))
+      );
+    }
+
+    function getGroupData(groupId) {
+      return get(/databases/$(database)/documents/group_orders/$(groupId)).data;
+    }
+
+    function isGroupMember(groupId) {
+      return isAuthenticated() && (
+        getGroupData(groupId).createdBy == request.auth.uid ||
+        (
+          getGroupData(groupId).memberUids != null &&
+          request.auth.uid in getGroupData(groupId).memberUids
+        ) ||
+        isAdmin()
+      );
+    }
+
+    function isGroupOrderActive(groupId) {
+      return getGroupData(groupId).status == 'open' &&
+        (!('paymentStatus' in getGroupData(groupId)) || getGroupData(groupId).paymentStatus != 'paid') &&
+        (!('orderId' in getGroupData(groupId)) || getGroupData(groupId).orderId == null || getGroupData(groupId).orderId == '');
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isUser(userId);
+      // Only admins can change user roles and account suspension status
+      allow update: if isUser(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status'])) || isAdmin();
+      allow delete: if isAdmin();
+
+      // User Saved Addresses Subcollection - strictly restricted to address owner
+      match /addresses/{addressId} {
+        allow read, write: if isUser(userId) || isAdmin();
+      }
+
+      // Nested user subcollections (e.g. cart, favorites, orders)
+      match /{subcollection}/{docId} {
+        allow read, write: if isUser(userId) || isAdmin();
+      }
+    }
+
+    // Top-Level Addresses Collection (users can only manage their own addresses)
+    match /addresses/{addressId} {
+      allow read, write: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId ||
+        request.auth.uid == request.resource.data.userId ||
+        isAdmin()
+      );
+    }
+
+    // Restaurants Collection
+    match /restaurants/{restaurantId} {
+      allow read: if true;
+      allow create: if isRestaurantOwner() || isAdmin();
+      allow update, delete: if isAdmin() || (
+        isRestaurantOwner() && (
+          resource.data.ownerId == request.auth.uid ||
+          resource.data.ownerEmail == request.auth.token.email
+        )
+      );
+    }
+
+    // Food Items Collection
+    match /food_items/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if isRestaurantOwner() || isAdmin();
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      // Allow updates by the customer who placed it, restaurant owner, assigned delivery partner, or admin
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Group Orders Collection - Strictly Private To Creator & Joined Members
+    match /group_orders/{groupId} {
+      // Group Document Access:
+      // - Creator & active members have read access
+      // - Open groups can be read by authenticated users for joining via Group ID / Invite Code / Link
+      // - Restaurant owners, assigned delivery partners, and admins have operational access
+      allow read: if isAuthenticated() && (
+        resource.data.createdBy == request.auth.uid ||
+        (resource.data.memberUids != null && request.auth.uid in resource.data.memberUids) ||
+        resource.data.status == 'open' ||
+        isAdmin() ||
+        isDeliveryPartner() ||
+        isRestaurantOwner()
+      );
+
+      // Group Creation:
+      // Any authenticated user can create a group order as its creator
+      allow create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+
+      // Group Updates:
+      // - Creator or joined members
+      // - Joining users updating memberUids/memberCount in an open group
+      // - Restaurant owner, delivery partner, or admin for order lifecycle
+      allow update: if isAuthenticated() && (
+        resource.data.createdBy == request.auth.uid ||
+        (resource.data.memberUids != null && request.auth.uid in resource.data.memberUids) ||
+        (resource.data.status == 'open' && request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberUids', 'memberCount', 'updatedAt'])) ||
+        isAdmin() ||
+        isDeliveryPartner() ||
+        isRestaurantOwner()
+      );
+
+      // Group Deletion:
+      // Creator or Admin only
+      allow delete: if isAuthenticated() && (resource.data.createdBy == request.auth.uid || isAdmin());
+
+      // Group Chat Messages & Voting Polls:
+      // Strictly restricted to creator and joined members only.
+      match /messages/{messageId} {
+        allow read, write: if isAuthenticated() && (
+          get(/databases/$(database)/documents/group_orders/$(groupId)).data.createdBy == request.auth.uid ||
+          (
+            get(/databases/$(database)/documents/group_orders/$(groupId)).data.memberUids != null &&
+            request.auth.uid in get(/databases/$(database)/documents/group_orders/$(groupId)).data.memberUids
+          )
+        );
+      }
+
+      // Group Voting Polls:
+      // - Polls remain active until group order is placed (no timer-based expiry).
+      // - Members can change their votes any number of times before order placement.
+      // - Only 1 active vote per user UID.
+      // - Voting and vote changes are prohibited once closed or once order is placed.
+      // - Final results/winners recorded upon order placement closure.
+      match /polls/{pollId} {
+        allow read: if isGroupMember(groupId) || isRestaurantOwner() || isDeliveryPartner();
+
+        // Only group members can create a poll, and only while the group order is active
+        allow create: if isGroupMember(groupId) &&
+          isGroupOrderActive(groupId) &&
+          request.resource.data.createdBy == request.auth.uid &&
+          request.resource.data.isClosed == false &&
+          request.resource.data.options.size() >= 2;
+
+        // Updates: Either casting/changing a vote, or closing the poll on order placement
+        allow update: if isGroupMember(groupId) && (
+          // 1. Voting / Changing vote before order placement:
+          (
+            // Poll and group order must be active
+            resource.data.isClosed != true &&
+            isGroupOrderActive(groupId) &&
+            // Only votes, voterNames, updatedAt can be modified
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes', 'voterNames', 'updatedAt']) &&
+            // User can only modify their own UID's vote
+            request.resource.data.votes[request.auth.uid] is int &&
+            request.resource.data.votes[request.auth.uid] >= 0 &&
+            request.resource.data.votes[request.auth.uid] < resource.data.options.size() &&
+            (!('votes' in resource.data) || resource.data.votes == null || request.resource.data.votes.diff(resource.data.votes).affectedKeys().hasOnly([request.auth.uid])) &&
+            (!('voterNames' in resource.data) || resource.data.voterNames == null || request.resource.data.voterNames.diff(resource.data.voterNames).affectedKeys().hasOnly([request.auth.uid]))
+          ) ||
+          // 2. Closing the poll (on order placement or by creator/payer/admin):
+          (
+            request.resource.data.isClosed == true &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'isClosed', 'closedAt', 'closedReason', 'winningOption',
+              'winningOptions', 'isTie', 'totalVotes', 'maxVotes',
+              'resultSummary', 'updatedAt'
+            ])
+          )
+        );
+
+        // Deletion only by group creator or admin
+        allow delete: if isAuthenticated() && (
+          getGroupData(groupId).createdBy == request.auth.uid ||
+          resource.data.createdBy == request.auth.uid ||
+          isAdmin()
+        );
+      }
+
+      // Group Subcollections (cart, members, orderHistory):
+      // Strictly restricted to creator and joined members (or joining user creating their own member doc)
+      match /{subcollection}/{docId} {
+        allow read, write: if isAuthenticated() && (
+          get(/databases/$(database)/documents/group_orders/$(groupId)).data.createdBy == request.auth.uid ||
+          (
+            get(/databases/$(database)/documents/group_orders/$(groupId)).data.memberUids != null &&
+            request.auth.uid in get(/databases/$(database)/documents/group_orders/$(groupId)).data.memberUids
+          ) ||
+          (subcollection == 'members' && docId == request.auth.uid) ||
+          (subcollection != 'messages' && subcollection != 'polls' && (
+            isAdmin() ||
+            isDeliveryPartner() ||
+            isRestaurantOwner()
+          ))
+        );
+      }
+    }
+
+    // Delivery Partners Fleet Collection
+    match /delivery_partners/{partnerId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isUser(partnerId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Food Categories Collection
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Offers & Coupons Collection
+    match /offers/{offerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Payments Collection
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}
+

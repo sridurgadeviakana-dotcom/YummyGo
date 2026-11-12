@@ -1,0 +1,203 @@
+[
+  {
+    "id": "paradise_madhapur",
+    "name": "Paradise Biryani",
+    "branchName": "Madhapur",
+    "cuisine": "Biryani",
+    "imageUrl": "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=900&auto=format&fit=crop",
+    "rating": 4.5,
+    "deliveryTime": "30-40 min",
+    "isAvailable": true
+  },
+  {
+    "id": "pizza_hut_hitech_city",
+    "name": "Pizza Hut",
+    "branchName": "Hitech City",
+    "cuisine": "Pizza",
+    "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=900&auto=format&fit=crop",
+    "rating": 4.2,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "burger_king_kukatpally",
+    "name": "Burger King",
+    "branchName": "Kukatpally",
+    "cuisine": "Burgers",
+    "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "20-30 min",
+    "isAvailable": true
+  },
+  {
+    "id": "dominos_kondapur",
+    "name": "Domino's",
+    "branchName": "Kondapur",
+    "cuisine": "Pizza",
+    "imageUrl": "https://images.unsplash.com/photo-1579751626657-72bc17010498?w=900&auto=format&fit=crop",
+    "rating": 4.1,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "kfc_gachibowli",
+    "name": "KFC",
+    "branchName": "Gachibowli",
+    "cuisine": "Chicken",
+    "imageUrl": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=900&auto=format&fit=crop",
+    "rating": 4.2,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "subway_miyapur",
+    "name": "Subway",
+    "branchName": "Miyapur",
+    "cuisine": "Sandwiches",
+    "imageUrl": "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=900&auto=format&fit=crop",
+    "rating": 4.0,
+    "deliveryTime": "20-30 min",
+    "isAvailable": true
+  },
+  {
+    "id": "chaat_corner_begumpet",
+    "name": "Chaat Corner",
+    "branchName": "Begumpet",
+    "cuisine": "Street Food",
+    "imageUrl": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=900&auto=format&fit=crop",
+    "rating": 4.1,
+    "deliveryTime": "20-30 min",
+    "isAvailable": true
+  },
+  {
+    "id": "tandoori_nights_banjara_hills",
+    "name": "Tandoori Nights",
+    "branchName": "Banjara Hills",
+    "cuisine": "North Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?w=900&auto=format&fit=crop",
+    "rating": 4.4,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  },
+  {
+    "id": "green_bowl_jubilee_hills",
+    "name": "Green Bowl",
+    "branchName": "Jubilee Hills",
+    "cuisine": "Healthy Food",
+    "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "20-30 min",
+    "isAvailable": true
+  },
+  {
+    "id": "sweet_truth_secunderabad",
+    "name": "Sweet Truth",
+    "branchName": "Secunderabad",
+    "cuisine": "Desserts",
+    "imageUrl": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=900&auto=format&fit=crop",
+    "rating": 4.2,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+
+  {
+    "id": "chutneys_hitech_city",
+    "name": "Chutneys",
+    "branchName": "Hitech City",
+    "cuisine": "South Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=900&auto=format&fit=crop",
+    "rating": 4.4,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "farzi_cafe_hitech_city",
+    "name": "Farzi Cafe",
+    "branchName": "Hitech City",
+    "cuisine": "North Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  },
+  {
+    "id": "exotica_hitech_city",
+    "name": "Exotica",
+    "branchName": "Hitech City",
+    "cuisine": "North Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  },
+  {
+    "id": "absolute_barbecues_hitech_city",
+    "name": "Absolute Barbecues",
+    "branchName": "Hitech City",
+    "cuisine": "BBQ, North Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?w=900&auto=format&fit=crop",
+    "rating": 4.5,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  },
+  {
+    "id": "flechazo_hitech_city",
+    "name": "Flechazo",
+    "branchName": "Hitech City",
+    "cuisine": "Multi Cuisine",
+    "imageUrl": "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&auto=format&fit=crop",
+    "rating": 4.4,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  },
+  {
+    "id": "karachi_bakery_hitech_city",
+    "name": "Karachi Bakery",
+    "branchName": "Hitech City",
+    "cuisine": "Bakery, Desserts",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "20-30 min",
+    "isAvailable": true
+  },
+  {
+    "id": "mandi_36_hitech_city",
+    "name": "Mandi 36",
+    "branchName": "Hitech City",
+    "cuisine": "Mandi, Arabian",
+    "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?w=900&auto=format&fit=crop",
+    "rating": 4.2,
+    "deliveryTime": "30-40 min",
+    "isAvailable": true
+  },
+  {
+    "id": "pakka_local_hitech_city",
+    "name": "Pakka Local",
+    "branchName": "Hitech City",
+    "cuisine": "South Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=900&auto=format&fit=crop",
+    "rating": 4.2,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "southern_spice_hitech_city",
+    "name": "Southern Spice",
+    "branchName": "Hitech City",
+    "cuisine": "South Indian",
+    "imageUrl": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "25-35 min",
+    "isAvailable": true
+  },
+  {
+    "id": "the_fishermans_wharf_hitech_city",
+    "name": "The Fisherman's Wharf",
+    "branchName": "Hitech City",
+    "cuisine": "Seafood, Goan",
+    "imageUrl": "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&auto=format&fit=crop",
+    "rating": 4.3,
+    "deliveryTime": "35-45 min",
+    "isAvailable": true
+  }
+]

@@ -1,0 +1,60 @@
+
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "yummygo-73dc0",
+          "appId": "1:1046250564774:android:3eb0e275a0910a0389d867",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "yummygo-73dc0",
+          "configurations": {
+            "android": "1:1046250564774:android:3eb0e275a0910a0389d867",
+            "ios": "1:1046250564774:ios:fb99a064cc92845889d867",
+            "macos": "1:1046250564774:ios:fb99a064cc92845889d867",
+            "web": "1:1046250564774:web:dd6ca43f2c33492289d867",
+            "windows": "1:1046250564774:web:bb703307d439e0a189d867"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "emulators": {
+    "auth": {
+      "host": "0.0.0.0",
+      "port": 9099
+    },
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "firestore": {
+      "host": "0.0.0.0",
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "host": "0.0.0.0",
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}

@@ -1,0 +1,6 @@
+name = "yummygo-payment-api"
+main = "src/index.js"
+compatibility_date = "2026-11-05"
+
+[vars]
+FIREBASE_PROJECT_ID = "yummygo-73dc0"
