@@ -1,5 +1,18 @@
+# Flutter
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+
+# Node.js
 node_modules/
+backend/.env
 .env
-.env*.local
-dist/
-generated/prisma/
+
+# Prisma generated files
+backend/generated/
+
+# IDE
+.idea/
+.vscode/
